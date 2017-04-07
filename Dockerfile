@@ -47,18 +47,19 @@ RUN tar xvzf hadoop-2.6.0.tar.gz
 ADD core-site.xml $HADOOP_CONFIG_HOME
 ADD hdfs-site.xml $HADOOP_CONFIG_HOME
 ADD mapred-site.xml $HADOOP_CONFIG_HOME
+ADD yarn-site.xml $HADOOP_CONFIG_HOME
 
 WORKDIR $HADOOP_CONFIG_HOME
 RUN touch masters
 
-
-RUN echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >> hadoop-env.sh
-RUN echo 'export HADOOP_HOME_WARN_SUPPRESS="TRUE"' >> hadoop-env.sh
-RUN echo 'export HADOOP_PID_DIR=$HOME/soft/apache/hadoop/hadoop-2.6.0/pids' >> hadoop-env.sh
-
 #etc
 RUN mkdir -p $HOME/soft/apache/hadoop/hadoop-2.6.0/hadoop-data
 RUN mkdir -p $HOME/soft/apache/hadoop/hadoop-2.6.0/pids
+
+
+RUN echo export JAVA_HOME=/usr/lib/jvm/java-8-oracle >> hadoop-env.sh
+RUN echo 'export HADOOP_HOME_WARN_SUPPRESS="TRUE"' >> hadoop-env.sh
+RUN echo 'export HADOOP_PID_DIR=$HOME/soft/apache/hadoop/hadoop-2.6.0/pids' >> hadoop-env.sh
 
 #protobuf
 USER root  
@@ -74,6 +75,9 @@ RUN apt-get -y install g++
 RUN ./configure
 RUN make && make install
 RUN ldconfig
+
+#vim
+#apt-get install vim
 
 
 CMD ["/usr/sbin/sshd", "-D"]
