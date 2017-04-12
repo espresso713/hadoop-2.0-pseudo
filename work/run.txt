@@ -1,0 +1,8 @@
+$HADOOP_HOME/bin/hdfs dfs -ls / &&
+$HADOOP_HOME/bin/hdfs dfs -mkdir /user &&
+$HADOOP_HOME/bin/hdfs dfs -mkdir /user/hadoop && 
+$HADOOP_HOME/bin/hdfs dfs -mkdir /user/hadoop/input &&
+$HADOOP_HOME/bin/hdfs dfs -put input/file01 /user/hadoop/input/ &&
+$HADOOP_HOME/bin/hdfs dfs -put input/file02 /user/hadoop/input/ &&
+$HADOOP_HOME/bin/hdfs dfs -ls &&
+$HADOOP_HOME/bin/yarn jar wc.jar  WordCount input output

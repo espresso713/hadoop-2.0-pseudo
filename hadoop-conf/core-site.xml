@@ -16,29 +16,9 @@
 
 <!-- Put site-specific property overrides in this file. -->
 
-<configuration>
+<configuration>	
 	<property>
-		<name>dfs.replication</name>
-		<value>1</value>		
-	</property>
-	<property>
-		<name>dfs.namenode.name.dir</name>
-		<value>/home/hadoop/data/dfs/namenode</value>		
-	</property>
-	<property>
-		<name>dfs.namenode.checkpoint.dir</name>
-		<value>/home/hadoop/data/dfs/namesecondary</value>		
-	</property>
-	<property>
-		<name>dfs.datanode.data.dir</name>
-		<value>/home/hadoop/data/dfs/datanode</value>		
-	</property>
-	<property>
-		<name>dfs.http.address</name>
-		<value>master:50070</value>		
-	</property>
-	<property>
-		<name>dfs.secondary.http.address</name>
-		<value>master:50090</value>		
+		<name>fs.defaultFS</name>
+		<value>hdfs://node1:9010</value>
 	</property>
 </configuration>

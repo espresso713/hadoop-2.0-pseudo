@@ -16,9 +16,9 @@ RUN echo "export VISIBLE=now" >> /etc/profile
 EXPOSE 22
 
 #env - account: hadoop
-ENV MY_HOME=/home/hadoop
+ENV HADOOP_ACCOUNT=/home/hadoop
 ENV JAVA_HOME=/usr/lib/jvm/java-8-oracle 
-ENV	HADOOP_HOME=$MY_HOME/soft/apache/hadoop/hadoop-2.6.0
+ENV	HADOOP_HOME=$HADOOP_ACCOUNT/soft/apache/hadoop/hadoop-2.6.0
 ENV	HADOOP_CONFIG_HOME=$HADOOP_HOME/etc/hadoop
 ENV	PATH=$PATH:$HADOOP_HOME/bin 
 ENV	PATH=$PATH:$HADOOP_HOME/sbin 
@@ -34,51 +34,58 @@ RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true 
     rm -rf /var/cache/oracle-jdk8-installer
 
 #account
+USER root
 RUN adduser hadoop
-RUN echo 'hadoop:m40931gf' | chpasswd
-USER hadoop    
+RUN echo 'hadoop:hadoop' | chpasswd
 
 #hadoop
-RUN mkdir -p $HOME/soft/apache/hadoop
-WORKDIR $MY_HOME/soft/apache/hadoop
+USER hadoop   
+RUN mkdir -p $HADOOP_ACCOUNT/soft/apache/hadoop
+WORKDIR $HADOOP_ACCOUNT/soft/apache/hadoop
 RUN wget https://archive.apache.org/dist/hadoop/common/hadoop-2.6.0/hadoop-2.6.0.tar.gz
 RUN tar xvzf hadoop-2.6.0.tar.gz
 
-ADD core-site.xml $HADOOP_CONFIG_HOME
-ADD hdfs-site.xml $HADOOP_CONFIG_HOME
-ADD mapred-site.xml $HADOOP_CONFIG_HOME
-ADD yarn-site.xml $HADOOP_CONFIG_HOME
+#hadoop-conf
+USER root
+ADD ./hadoop-conf/core-site.xml $HADOOP_CONFIG_HOME
+ADD ./hadoop-conf/hdfs-site.xml $HADOOP_CONFIG_HOME
+ADD ./hadoop-conf/mapred-site.xml $HADOOP_CONFIG_HOME
+ADD ./hadoop-conf/yarn-site.xml $HADOOP_CONFIG_HOME
+RUN chown hadoop:hadoop $HADOOP_CONFIG_HOME/core-site.xml
+RUN chown hadoop:hadoop $HADOOP_CONFIG_HOME/hdfs-site.xml
+RUN chown hadoop:hadoop $HADOOP_CONFIG_HOME/mapred-site.xml
+RUN chown hadoop:hadoop $HADOOP_CONFIG_HOME/yarn-site.xml
 
-WORKDIR $HADOOP_CONFIG_HOME
-RUN touch masters
+#hadoop example
+USER root
+RUN mkdir $HADOOP_ACCOUNT/work
+ADD ./work $HADOOP_ACCOUNT/work
+RUN chown -R hadoop:hadoop $HADOOP_ACCOUNT/work
+
+#hadoop bootstrap.sh
+USER root
+ADD bootstrap.sh /etc
+RUN chown hadoop:hadoop /etc/bootstrap.sh
 
 #etc
+USER hadoop
 RUN mkdir -p $HOME/soft/apache/hadoop/hadoop-2.6.0/hadoop-data
 RUN mkdir -p $HOME/soft/apache/hadoop/hadoop-2.6.0/pids
-
-
-RUN echo export JAVA_HOME=/usr/lib/jvm/java-8-oracle >> hadoop-env.sh
-RUN echo 'export HADOOP_HOME_WARN_SUPPRESS="TRUE"' >> hadoop-env.sh
-RUN echo 'export HADOOP_PID_DIR=$HOME/soft/apache/hadoop/hadoop-2.6.0/pids' >> hadoop-env.sh
 
 #protobuf
 USER root  
 RUN apt-get update
-RUN mkdir -p $HOME/soft/protobuf
-WORKDIR $MY_HOME/soft/protobuf
-RUN wget https://github.com/google/protobuf/releases/download/v2.5.0/protobuf-2.5.0.tar.gz
-RUN tar xvzf protobuf-2.5.0.tar.gz
-WORKDIR $MY_HOME/soft/protobuf/protobuf-2.5.0
 RUN apt-get -y install make
 RUN apt-get -y install gcc
 RUN apt-get -y install g++
+
+WORKDIR /usr/local
+RUN wget https://github.com/google/protobuf/releases/download/v2.5.0/protobuf-2.5.0.tar.gz
+RUN tar xvzf protobuf-2.5.0.tar.gz
+WORKDIR /usr/local/protobuf-2.5.0
 RUN ./configure
 RUN make && make install
 RUN ldconfig
-
-#vim
-#apt-get install vim
-
 
 CMD ["/usr/sbin/sshd", "-D"]
 

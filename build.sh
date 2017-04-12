@@ -1,4 +1,4 @@
 #!/bin/sh
-docker rm -f namdenode
-docker build -t namenode:1.0 .
+docker rm -f node1
+docker build -t host1:1.0 .
 
