@@ -25,6 +25,10 @@ docker exec -it -u hadoop node1 sh -c '/etc/bootstrap.sh';
 #hadoop start
 docker exec -it -u hadoop node1 sh -c '$HADOOP_HOME/bin/hdfs namenode -format';
 docker exec -it -u hadoop node1 sh -c '$HADOOP_HOME/sbin/start-all.sh';
+
+#history server
+docker exec -it --user hadoop node1 sh -c '$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver';
+
 docker exec -it -u hadoop node1 /bin/bash;
 
 
