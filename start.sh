@@ -4,7 +4,14 @@ docker rm -f node1
 docker network rm mynet
 docker network create --subnet=172.19.0.0/16 mynet
 
-docker run -it --net mynet -h node1 --ip 172.19.0.2 -p 8081:50070 \
+docker run -it --net mynet -h node1 --ip 172.19.0.2 \
+	-p 50070:50070 \
+	-p 50090:50090 \
+	-p 50075:50075 \
+	-p 19888:19888 \
+	-p 8088:8088 \
+	-p 8042:8042 \
+	-p 8082:22 \
 	-d --name node1 host1:1.0 
 
 
